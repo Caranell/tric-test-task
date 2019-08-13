@@ -1,6 +1,5 @@
 import * as React from 'react';
 import ErrorMessage from './ErrorMessage';
-import './Form.css';
 
 const EMAIL_REGEX = new RegExp(
   /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/,
@@ -132,9 +131,9 @@ class FormControl extends React.Component<{}, State> {
         .then(result => {
           returnState.img = result;
         })
-        .then(() => console.log(JSON.stringify(returnState)));
+        .then(() => alert(`Json для отправки на сервер: ${JSON.stringify(returnState)}`));
     } else {
-      console.log(JSON.stringify(returnState));
+      alert(`Json для отправки на сервер: ${JSON.stringify(returnState)}`);
     }
   };
 
@@ -151,9 +150,8 @@ class FormControl extends React.Component<{}, State> {
     const validForm = this.checkFormCompletion();
     console.log(errors);
     return (
-      <div className="form">
-        <h1>Обратная связь</h1>
-        <form>
+      <div className="form-div">
+        <form className="form">
           <div className="form__group">
             <label className="form__group-label">Имя</label>
             <input className="form__input form__required" type="text" name="firstName" onChange={this.onTextChange} />
@@ -192,7 +190,7 @@ class FormControl extends React.Component<{}, State> {
             ></textarea>
           </div>
           <div className="form__group">
-            <label className="form__group-label form__group-label_required">Изображение</label>
+            <label className="form__group-label">Изображение</label>
             <input
               className="form__input-img"
               type="file"
@@ -201,12 +199,15 @@ class FormControl extends React.Component<{}, State> {
               onChange={this.onImageChange}
             />
           </div>
-          <ul className="form__errors">
-            {Object.values(errors).map((error, i) => {
-              if (error !== 'empty' && error!=='') return <ErrorMessage key={i} message={error} />;
-            })}
-          </ul>
-          <button className="form__submit" disabled={!validForm} onClick={this.onSubmit}>
+          <div className="form__group">
+            <ul className="form__errors">
+              {Object.values(errors).map((error, i) => {
+                if (error !== 'empty' && error !== '') return <ErrorMessage key={i} message={error} />;
+              })}
+            </ul>
+          </div>
+
+          <button className="form__submit-button" disabled={!validForm} onClick={this.onSubmit}>
             Отправить
           </button>
         </form>
