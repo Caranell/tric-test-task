@@ -1,11 +1,11 @@
 import * as React from 'react';
-import { longStackSupport } from 'q';
 import ErrorMessage from './ErrorMessage';
 import './Form.css';
 
 const EMAIL_REGEX = new RegExp(
   /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/,
 );
+
 interface State {
   firstName: string;
   secondName: string;
@@ -41,7 +41,7 @@ class FormControl extends React.Component<{}, State> {
     img: null,
     errors: {
       name: 'empty',
-      img: '',
+      img: 'empty',
       email: 'empty',
       category: 'empty',
       message: 'empty',
@@ -78,7 +78,6 @@ class FormControl extends React.Component<{}, State> {
           : this.setState({ errors: { ...this.state.errors, message: '' } });
         break;
       case 'img':
-        console.log('this.state.errors.img :', this.state.errors.img);
         imgSize > 2
           ? this.setState({
               errors: { ...this.state.errors, img: 'Размер изображения не должен превышать 2Мб' },
@@ -92,7 +91,6 @@ class FormControl extends React.Component<{}, State> {
 
   // обработка изменения текстовых полей
   private onTextChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>): void => {
-    console.log(this.state);
     const { name: field, value } = event.target;
     this.setState({ ...this.state, [field]: value.trim() }, () => this.validateField(field));
   };
@@ -117,7 +115,6 @@ class FormControl extends React.Component<{}, State> {
         this.setState({ ...this.state, img: null });
       }
     }
-    console.log(this.state.img);
   };
 
   // проверка корректности заполнения полей
@@ -152,70 +149,68 @@ class FormControl extends React.Component<{}, State> {
   public render(): React.ReactNode {
     const errors = this.state.errors;
     const validForm = this.checkFormCompletion();
-    console.log(validForm);
+    console.log(errors);
     return (
-      <form className="form">
-        <div>
-          <label className="form__label">
-            Имя <br />
+      <div className="form">
+        <h1>Обратная связь</h1>
+        <form>
+          <div className="form__group">
+            <label className="form__group-label">Имя</label>
             <input className="form__input form__required" type="text" name="firstName" onChange={this.onTextChange} />
-          </label>
-
-          <label className="form__label">
-            Фамилия <br />
+          </div>
+          <div className="form__group">
+            <label className="form__group-label">Фамилия</label>
             <input className="form__input" type="text" name="secondName" onChange={this.onTextChange} />
-          </label>
-        </div>
-
-        <label className="form__label form__required">
-          Email <br />
-          <input className="form__input" type="email" name="email" onChange={this.onTextChange} />
-        </label>
-
-        <label className="form__label">
-          Тип обращения <br />
-          <select name="category" onChange={this.onSelectChnage}>
-            <option value="" selected hidden>
-              Выберите тип
-            </option>
-            <option value="Жалоба">Жалоба</option>
-            <option value="Благодарность">Благодарность</option>
-          </select>
-        </label>
-
-        <label className="form__label">
-          Сообщение <br />
-          <textarea
-            className="from_input"
-            name="message"
-            placeholder="Оставьте здесь ваше сообщение."
-            cols={30}
-            rows={10}
-            onChange={this.onTextChange}
-          ></textarea>
-        </label>
-
-        <label className="form__label">
-          Изображение
-          <br />
-          <input
-            className="form__input"
-            type="file"
-            name="image"
-            accept=".jpg,.jpeg,.png"
-            onChange={this.onImageChange}
-          />
-        </label>
-
-        <div className="form-errors">
-          {Object.values(errors).map((error, i) => {
-            if (error !== 'empty') return <ErrorMessage key={i} message={error} />;
-          })}
-        </div>
-        <button disabled={!validForm} onClick={this.onSubmit}>
-          asdf
-        </button>
-      </form>
+          </div>
+          <div className="form__group">
+            <label className="form__group-label form__group-label_required">Email</label>
+            <input className="form__input" type="email" name="email" onChange={this.onTextChange} />
+          </div>
+          <div className="form__group">
+            <label className="form__group-label form__group-label_required">Тип обращения</label>
+            <select className="select" name="category" onChange={this.onSelectChnage}>
+              <option value="" selected hidden>
+                Выберите тип
+              </option>
+              <option className="select__option" value="Жалоба">
+                Жалоба
+              </option>
+              <option className="select__option" value="Благодарность">
+                Благодарность
+              </option>
+            </select>
+          </div>
+          <div className="form__group">
+            <label className="form__group-label form__group-label_required">Сообщение</label>
+            <textarea
+              className="form__input"
+              name="message"
+              placeholder="Оставьте здесь ваше сообщение."
+              cols={30}
+              rows={10}
+              onChange={this.onTextChange}
+            ></textarea>
+          </div>
+          <div className="form__group">
+            <label className="form__group-label form__group-label_required">Изображение</label>
+            <input
+              className="form__input-img"
+              type="file"
+              name="image"
+              accept=".jpg,.jpeg,.png"
+              onChange={this.onImageChange}
+            />
+          </div>
+          <ul className="form__errors">
+            {Object.values(errors).map((error, i) => {
+              if (error !== 'empty' && error!=='') return <ErrorMessage key={i} message={error} />;
+            })}
+          </ul>
+          <button className="form__submit" disabled={!validForm} onClick={this.onSubmit}>
+            Отправить
+          </button>
+        </form>
+      </div>
     );
   }
 }
