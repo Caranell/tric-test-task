@@ -1,6 +1,10 @@
 import * as React from 'react';
 import { longStackSupport } from 'q';
 import ErrorMessage from './ErrorMessage';
+
+const EMAIL_REGEX = new RegExp(
+  /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/,
+);
 interface State {
   firstName: string;
   secondName: string;
@@ -8,7 +12,15 @@ interface State {
   category: string;
   message: string;
   img: File | null;
+  errors: {
+    name: string;
+    img: string;
+    email: string;
+    category: string;
+    message: string;
+  };
 }
+
 class FormControl extends React.Component<{}, State> {
   state: State = {
     firstName: '',
@@ -17,36 +29,82 @@ class FormControl extends React.Component<{}, State> {
     category: '',
     message: '',
     img: null,
+    errors: {
+      name: '',
+      img: '',
+      email: '',
+      category: '',
+      message: '',
+    },
   };
 
-  private onInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    console.log(event.target);
-    const { name: field, value } = event.target;
-    this.setState({
-      ...this.state,
-      [field]: value.trim(),
-    });
+  // проверка корректности заполнения поля
+  private validateField = (field: string): void => {
+    const { firstName, secondName, email, category, message, img } = this.state;
+    const imgSize = img ? img.size / 1024 / 1024 : 0;
+
+    switch (field) {
+      case 'email':
+        !email.match(EMAIL_REGEX)
+          ? this.setState({ errors: { ...this.state.errors, email: 'Некорректный адрес электронной почты' } })
+          : this.setState({ errors: { ...this.state.errors, email: '' } });
+        break;
+      case 'firstName':
+      case 'secondName':
+        !(firstName || secondName)
+          ? this.setState({ errors: { ...this.state.errors, name: 'Необходимо заполнить имя или фамилию' } })
+          : this.setState({ errors: { ...this.state.errors, name: '' } });
+        break;
+      case 'category':
+        !category
+          ? this.setState({ errors: { ...this.state.errors, category: 'Необходимо выбрать тип обращения' } })
+          : this.setState({ errors: { ...this.state.errors, category: '' } });
+        break;
+      case 'message':
+        message.length < 10
+          ? this.setState({
+              errors: { ...this.state.errors, message: 'Сообщение должно содержать не менее 10 символов' },
+            })
+          : this.setState({ errors: { ...this.state.errors, message: '' } });
+        break;
+      case 'img':
+        console.log('this.state.errors.img :', this.state.errors.img);
+        imgSize > 2
+          ? this.setState({
+              errors: { ...this.state.errors, img: 'Размер изображения не должен превышать 2Мб' },
+            })
+          : this.setState({ errors: { ...this.state.errors, img: '' } });
+        break;
+      default:
+        return;
+    }
+  };
+
+  // обработка изменения текстовых полей
+  private onTextChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>): void => {
     console.log(this.state);
+    const { name: field, value } = event.target;
+    this.setState({ ...this.state, [field]: value.trim() }, () => this.validateField(field));
   };
 
-  private onSelectChnage = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    const { value } = event.target;
-    this.setState({
-      ...this.state,
-      category: value,
-    });
+  // обработка изменения выпадающего меню
+  private onSelectChnage = (event: React.ChangeEvent<HTMLSelectElement>): void => {
+    const { name: field, value } = event.target;
+    this.validateField(field);
+    this.setState({ ...this.state, [field]: value }, () => this.validateField(field));
   };
 
-  private onImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.files) {
-      const file = event.target.files[0];
-      const fileSize = file.size / 1024 / 1024;
-      if (fileSize < 2) {
-        this.setState({
-          ...this.state,
-          img: file,
-        });
-      } else {
+  // обработка добавления изображения
+  private onImageChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const input = event.target;
+    if (input.files) {
+      const file = input.files[0];
+      await this.setState({ ...this.state, img: file }, () => {
+        this.validateField('img');
+      });
+      if (this.state.errors.img !== '') {
+        input.value = '';
+        this.setState({ ...this.state, img: null });
       }
     }
   };
@@ -58,33 +116,66 @@ class FormControl extends React.Component<{}, State> {
     }
   };
 
-  public render() {
-    const NOT_EMPTY_MESSAGE = 'не может быть пустым';
+  public render(): React.ReactNode {
+    const errors = this.state.errors;
     return (
-      <form action="">
-        <label htmlFor="firstName">Name</label>
-        <input type="text" name="firstName" id="firstName" onInput={this.onInputChange} />
+      <form className="form">
+        <label className="form__label">
+          firstName <br />
+          <input className="form__input" type="text" name="firstName" onChange={this.onTextChange} />
+        </label>
 
-        <label htmlFor="secondName">SecondName</label>
-        <input type="text" name="secondName" id="secondName" onInput={this.onInputChange} />
+        <label className="form__label">
+          SecondName <br />
+          <input className="form__input" type="text" name="secondName" onChange={this.onTextChange} />
+        </label>
 
-        <label htmlFor="email">Email</label>
-        <input type="email" name="email" id="email" onInput={this.onInputChange} />
+        <label className="form__label">
+          Email <br />
+          <input className="form__input" type="email" name="email" onChange={this.onTextChange} />
+        </label>
 
-        <label htmlFor="category">Message</label>
-        <select name="category" id="category" onChange={this.onSelectChnage}>
-          <option value="" selected hidden>
-            Выберите тип
-          </option>
-          <option value="Жалоба">Жалоба</option>
-          <option value="Благодарность">Благодарность</option>
-        </select>
+        <label className="form__label">
+          Category <br />
+          <select name="category" onChange={this.onSelectChnage}>
+            <option value="" selected hidden>
+              Выберите тип
+            </option>
+            <option value="Жалоба">Жалоба</option>
+            <option value="Благодарность">Благодарность</option>
+          </select>
+        </label>
 
-        <input type="text" name="message" id="message" onInput={this.onInputChange} />
-        <label htmlFor="message">Message</label>
+        <label className="form__label">
+          Message <br />
+          <textarea
+            className="from_input"
+            name="message"
+            placeholder="Расскажите нам что-нибудь"
+            cols={30}
+            rows={10}
+            onChange={this.onTextChange}
+          ></textarea>
+        </label>
 
-        <input type="file" name="image" accept=".jpg,.jpeg,.png" onChange={this.onImageChange} />
-        <button>remove input file</button>
+        <label className="form__label">
+          Place Your File
+          <br />
+          <input
+            className="form__input"
+            type="file"
+            name="image"
+            accept=".jpg,.jpeg,.png"
+            onChange={this.onImageChange}
+          />
+        </label>
+
+        <div className="form-errors">
+          {Object.values(errors).map((error, i) => (
+            <ErrorMessage key={i} message={error} />
+          ))}
+        </div>
+        <button type="submit"></button>
       </form>
     );
   }
