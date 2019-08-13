@@ -47,9 +47,11 @@ class FormControl extends React.Component<{}, State> {
     },
   };
 
-  // проверка корректности заполнения поля
+  // проверка корректности заполнения полей
   private validateField = (field: string): void => {
     const { firstName, secondName, email, category, message, img } = this.state;
+
+    //размер изображения в МБ
     const imgSize = img ? img.size / 1024 / 1024 : 0;
 
     switch (field) {
@@ -88,17 +90,12 @@ class FormControl extends React.Component<{}, State> {
     }
   };
 
-  // обработка изменения текстовых полей
-  private onTextChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>): void => {
+  // обработка изменения  полей
+  private onFieldChange = (
+    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>,
+  ): void => {
     const { name: field, value } = event.target;
     this.setState({ ...this.state, [field]: value.trim() }, () => this.validateField(field));
-  };
-
-  // обработка изменения выпадающего меню
-  private onSelectChnage = (event: React.ChangeEvent<HTMLSelectElement>): void => {
-    const { name: field, value } = event.target;
-    this.validateField(field);
-    this.setState({ ...this.state, [field]: value }, () => this.validateField(field));
   };
 
   // обработка добавления изображения
@@ -122,6 +119,7 @@ class FormControl extends React.Component<{}, State> {
     return !errors.email && !errors.category && !errors.message && !errors.name ? true : false;
   };
 
+  // метод для отправки формы
   private onSubmit = (event: React.FormEvent) => {
     const { firstName, secondName, email, category, message, img } = this.state;
     event.preventDefault();
@@ -154,19 +152,19 @@ class FormControl extends React.Component<{}, State> {
         <form className="form">
           <div className="form__group">
             <label className="form__group-label">Имя</label>
-            <input className="form__input form__required" type="text" name="firstName" onChange={this.onTextChange} />
+            <input className="form__input form__required" type="text" name="firstName" onChange={this.onFieldChange} />
           </div>
           <div className="form__group">
             <label className="form__group-label">Фамилия</label>
-            <input className="form__input" type="text" name="secondName" onChange={this.onTextChange} />
+            <input className="form__input" type="text" name="secondName" onChange={this.onFieldChange} />
           </div>
           <div className="form__group">
             <label className="form__group-label form__group-label_required">Email</label>
-            <input className="form__input" type="email" name="email" onChange={this.onTextChange} />
+            <input className="form__input" type="email" name="email" onChange={this.onFieldChange} />
           </div>
           <div className="form__group">
             <label className="form__group-label form__group-label_required">Тип обращения</label>
-            <select className="select" name="category" onChange={this.onSelectChnage}>
+            <select className="select" name="category" onChange={this.onFieldChange}>
               <option value="" selected hidden>
                 Выберите тип
               </option>
@@ -186,7 +184,7 @@ class FormControl extends React.Component<{}, State> {
               placeholder="Оставьте здесь ваше сообщение."
               cols={30}
               rows={10}
-              onChange={this.onTextChange}
+              onChange={this.onFieldChange}
             ></textarea>
           </div>
           <div className="form__group">
