@@ -2,6 +2,7 @@
   "name": "tric-test-task",
   "version": "0.1.0",
   "private": true,
+  "homepage": "http://caranell.github.io/tric-test-task",
   "dependencies": {
     "@types/jest": "24.0.17",
     "@types/node": "12.7.1",
@@ -16,7 +17,9 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -40,6 +43,7 @@
     "eslint-config-prettier": "^6.0.0",
     "eslint-plugin-prettier": "^3.1.0",
     "eslint-plugin-react": "^7.14.3",
+    "gh-pages": "^2.1.1",
     "prettier": "^1.18.2"
   }
 }
