@@ -2,7 +2,7 @@
   "name": "tric-test-task",
   "version": "0.1.0",
   "private": true,
-  "homepage": "http://caranell.github.io/tric-test-task",
+  "homepage": "./",
   "dependencies": {
     "@types/jest": "24.0.17",
     "@types/node": "12.7.1",
