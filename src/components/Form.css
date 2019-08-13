@@ -1,0 +1,22 @@
+.form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+*:invalid {
+  outline-color: red;
+}
+
+input:focus,
+textarea:focus,
+select:focus,
+option:focus {
+  outline: 0;
+  border-color: lightskyblue;
+}
+
+option:hover {
+  background-color: blue;
+  color: white;
+}

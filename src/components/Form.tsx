@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { longStackSupport } from 'q';
 import ErrorMessage from './ErrorMessage';
+import './Form.css';
 
 const EMAIL_REGEX = new RegExp(
   /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/,
@@ -21,6 +22,15 @@ interface State {
   };
 }
 
+interface finalState {
+  firstName: string;
+  secondName: string;
+  email: string;
+  category: string;
+  message: string;
+  img: string | null | ArrayBuffer;
+}
+
 class FormControl extends React.Component<{}, State> {
   state: State = {
     firstName: '',
@@ -30,11 +40,11 @@ class FormControl extends React.Component<{}, State> {
     message: '',
     img: null,
     errors: {
-      name: '',
+      name: 'empty',
       img: '',
-      email: '',
-      category: '',
-      message: '',
+      email: 'empty',
+      category: 'empty',
+      message: 'empty',
     },
   };
 
@@ -95,7 +105,7 @@ class FormControl extends React.Component<{}, State> {
   };
 
   // обработка добавления изображения
-  private onImageChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+  private onImageChange = async (event: React.ChangeEvent<HTMLInputElement>): Promise<void> => {
     const input = event.target;
     if (input.files) {
       const file = input.files[0];
@@ -107,36 +117,63 @@ class FormControl extends React.Component<{}, State> {
         this.setState({ ...this.state, img: null });
       }
     }
+    console.log(this.state.img);
   };
 
-  private onFormSend = () => {
+  // проверка корректности заполнения полей
+  private checkFormCompletion = (): boolean => {
+    const errors = this.state.errors;
+    return !errors.email && !errors.category && !errors.message && !errors.name ? true : false;
+  };
+
+  private onSubmit = (event: React.FormEvent) => {
     const { firstName, secondName, email, category, message, img } = this.state;
-    if (email && (firstName || secondName) && category && message.length > 9 && img) {
-      //create json object
+    event.preventDefault();
+    let returnState: finalState = { firstName, secondName, email, category, message, img: null };
+    if (img) {
+      this.convertFileToBase64(img)
+        .then(result => {
+          returnState.img = result;
+        })
+        .then(() => console.log(JSON.stringify(returnState)));
+    } else {
+      console.log(JSON.stringify(returnState));
     }
+  };
+
+  convertFileToBase64 = (img: File): Promise<string | null | ArrayBuffer> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(img);
+      reader.onload = () => resolve(reader.result);
+    });
   };
 
   public render(): React.ReactNode {
     const errors = this.state.errors;
+    const validForm = this.checkFormCompletion();
+    console.log(validForm);
     return (
       <form className="form">
-        <label className="form__label">
-          firstName <br />
-          <input className="form__input" type="text" name="firstName" onChange={this.onTextChange} />
-        </label>
+        <div>
+          <label className="form__label">
+            Имя <br />
+            <input className="form__input form__required" type="text" name="firstName" onChange={this.onTextChange} />
+          </label>
 
-        <label className="form__label">
-          SecondName <br />
-          <input className="form__input" type="text" name="secondName" onChange={this.onTextChange} />
-        </label>
+          <label className="form__label">
+            Фамилия <br />
+            <input className="form__input" type="text" name="secondName" onChange={this.onTextChange} />
+          </label>
+        </div>
 
-        <label className="form__label">
+        <label className="form__label form__required">
           Email <br />
           <input className="form__input" type="email" name="email" onChange={this.onTextChange} />
         </label>
 
         <label className="form__label">
-          Category <br />
+          Тип обращения <br />
           <select name="category" onChange={this.onSelectChnage}>
             <option value="" selected hidden>
               Выберите тип
@@ -147,11 +184,11 @@ class FormControl extends React.Component<{}, State> {
         </label>
 
         <label className="form__label">
-          Message <br />
+          Сообщение <br />
           <textarea
             className="from_input"
             name="message"
-            placeholder="Расскажите нам что-нибудь"
+            placeholder="Оставьте здесь ваше сообщение."
             cols={30}
             rows={10}
             onChange={this.onTextChange}
@@ -159,7 +196,7 @@ class FormControl extends React.Component<{}, State> {
         </label>
 
         <label className="form__label">
-          Place Your File
+          Изображение
           <br />
           <input
             className="form__input"
@@ -171,11 +208,13 @@ class FormControl extends React.Component<{}, State> {
         </label>
 
         <div className="form-errors">
-          {Object.values(errors).map((error, i) => (
-            <ErrorMessage key={i} message={error} />
-          ))}
+          {Object.values(errors).map((error, i) => {
+            if (error !== 'empty') return <ErrorMessage key={i} message={error} />;
+          })}
         </div>
-        <button type="submit"></button>
+        <button disabled={!validForm} onClick={this.onSubmit}>
+          asdf
+        </button>
       </form>
     );
   }
