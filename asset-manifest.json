@@ -1,14 +1,14 @@
 {
   "files": {
     "main.css": "/tric-test-task/static/css/main.e969f607.chunk.css",
-    "main.js": "/tric-test-task/static/js/main.876d393f.chunk.js",
-    "main.js.map": "/tric-test-task/static/js/main.876d393f.chunk.js.map",
+    "main.js": "/tric-test-task/static/js/main.64b43b22.chunk.js",
+    "main.js.map": "/tric-test-task/static/js/main.64b43b22.chunk.js.map",
     "runtime~main.js": "/tric-test-task/static/js/runtime~main.015826b4.js",
     "runtime~main.js.map": "/tric-test-task/static/js/runtime~main.015826b4.js.map",
-    "static/js/2.2f9ff574.chunk.js": "/tric-test-task/static/js/2.2f9ff574.chunk.js",
-    "static/js/2.2f9ff574.chunk.js.map": "/tric-test-task/static/js/2.2f9ff574.chunk.js.map",
+    "static/js/2.426ff8e0.chunk.js": "/tric-test-task/static/js/2.426ff8e0.chunk.js",
+    "static/js/2.426ff8e0.chunk.js.map": "/tric-test-task/static/js/2.426ff8e0.chunk.js.map",
     "index.html": "/tric-test-task/index.html",
-    "precache-manifest.7a10c5d7e587e0162fc2f70aea6699d9.js": "/tric-test-task/precache-manifest.7a10c5d7e587e0162fc2f70aea6699d9.js",
+    "precache-manifest.3a23f12e058778d983170abb318246ae.js": "/tric-test-task/precache-manifest.3a23f12e058778d983170abb318246ae.js",
     "service-worker.js": "/tric-test-task/service-worker.js",
     "static/css/main.e969f607.chunk.css.map": "/tric-test-task/static/css/main.e969f607.chunk.css.map"
   }

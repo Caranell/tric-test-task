@@ -14,7 +14,7 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/4.3.1/workbox-sw.js");
 
 importScripts(
-  "/tric-test-task/precache-manifest.7a10c5d7e587e0162fc2f70aea6699d9.js"
+  "/tric-test-task/precache-manifest.3a23f12e058778d983170abb318246ae.js"
 );
 
 self.addEventListener('message', (event) => {
